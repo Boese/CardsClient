@@ -1,0 +1,44 @@
+<html data-ng-app="cardsApp">
+  <head>
+    <meta charset="utf-8">
+    <title>Cards</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="bower_components/famous-angular/dist/famous-angular.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <base target="_blank">
+    <style>
+      fa-app {
+        width:auto;
+        height:auto;
+      }
+      body {
+        background-image: url('images/main_background.png');
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+      <div ui-view></div>
+    </div>
+
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="bower_components/jquery/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/modernizr/modernizr.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script type="text/javascript" src="bower_components/famous/dist/famous-global.js"></script>
+    <script type="text/javascript" src="bower_components/famous-angular/dist/famous-angular.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script type="text/javascript" src="isaac.js"></script>
+    <script type="text/javascript" src="bCrypt.js"></script>
+
+    <script type="text/javascript" src="scripts/app.js"></script>
+    <script type="text/javascript" src="scripts/socket.js"></script>
+    <script type="text/javascript" src="scripts/controllers.js"></script>
+  </body>
+</html>
