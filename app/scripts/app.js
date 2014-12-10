@@ -4,18 +4,26 @@ angular.module('cardsApp', ['cardsApp.socket','cardsApp.controllers'])
   $urlRouterProvider.otherwise("/login");
 
   $stateProvider
-  .state('login', {
+  .state('main', {
     abstract: true,
-    templateUrl: 'partials/login.html',
-    controller:'loginCtrl'
+    templateUrl: 'partials/main.html',
+    controller:'mainCtrl'
   })
-  .state('login.login', {
+  .state('main.login', {
     url: "/login",
-    templateUrl: 'partials/login.login.html'
+    templateUrl: 'partials/main.login.html'
   })
-  .state('login.create-account', {
+  .state('main.create-account', {
     url: '/create-account',
-    templateUrl: 'partials/login.create-account.html'
+    templateUrl: 'partials/main.create-account.html'
+  })
+  .state('main.lobby', {
+    url: '/lobby',
+    templateUrl: 'partials/main.lobby.html'
+  })
+  .state('main.game', {
+    url: '/game',
+    templateUrl: 'partials/main.game.html'
   })
 
 });

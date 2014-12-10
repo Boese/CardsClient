@@ -1,0 +1,34 @@
+<fa-modifier>
+<fa-flexible-layout fa-options="flexibleLayoutOptions">
+  <fa-modifier fa-opacity="0.8">
+    <fa-flexible-layout fa-options="mySidebarFlexibleOptions">
+        <fa-surface fa-click="newGame()" fa-options="mySidebar">
+          New Game
+        </fa-surface>
+        <fa-surface fa-click="randomGame()" fa-options="mySidebar">
+          Random Game
+        </fa-surface>
+        <fa-surface fa-background-color="'white'"></fa-surface>
+    </fa-flexible-layout>
+</fa-modifier>
+
+<fa-scroll-view fa-pipe-from="eventHandler">
+  <fa-modifier fa-size="[undefined,list.length*120]">
+
+  <fa-grid-layout fa-options="myGridLayoutOptions">
+    <fa-view ng-repeat="item in list">
+
+    <fa-modifier fa-rotate-y="myAngleLobby($index)" fa-transform="myTransformLobby($index)" fa-opacity="0.8">
+      <fa-surface fa-options="gameGridOption" fa-background-color="item.color" fa-color="'white'" fa-pipe-to="eventHandler">
+        <div class="row"><div class="well well-sm" style="background:white;color:black;font-size=25px">{{item.content}}</div></div>
+        <div class="row">players : {{item.players}}</div>
+        <div class="row"><div ng-click="toggleLobby($index)" class="btn btn-info">Join Game!</div></div>
+      </fa-surface>
+    </fa-modifier>
+</fa-view>
+  </fa-grid-layout>
+
+</fa-modifier>
+</fa-scroll-view>
+</fa-flexible-layout>
+</fa-modifier>

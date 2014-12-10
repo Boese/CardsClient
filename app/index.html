@@ -7,36 +7,36 @@
     <link rel="stylesheet" href="styles/main.css">
     <base target="_blank">
     <style>
-      fa-app {
-        width:auto;
-        height:auto;
-      }
-      body {
-        background-image: url('images/main_background.png');
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
-      }
+    body {
+      background: url('images/main_background.png');
+      background-size:100% 100%;
+    }
+    fa-app {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
     </style>
   </head>
+
   <body>
 
-    <div class="container">
-      <div ui-view></div>
-    </div>
+    <div ui-view></div>
 
+    <!--Dependencies-->
     <script type="text/javascript" src="bower_components/angular/angular.js"></script>
     <script type="text/javascript" src="bower_components/jquery/jquery.js"></script>
     <script type="text/javascript" src="bower_components/modernizr/modernizr.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-
     <script type="text/javascript" src="bower_components/famous/dist/famous-global.js"></script>
     <script type="text/javascript" src="bower_components/famous-angular/dist/famous-angular.js"></script>
     <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script type="text/javascript" src="isaac.js"></script>
     <script type="text/javascript" src="bCrypt.js"></script>
 
+    <!--My Scripts-->
     <script type="text/javascript" src="scripts/app.js"></script>
     <script type="text/javascript" src="scripts/socket.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
