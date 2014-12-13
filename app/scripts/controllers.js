@@ -6,6 +6,21 @@ function mainCtrl($scope,$rootScope,$state,$famous,$interval,Service) {
   var Transform = $famous['famous/core/Transform'];
   var Transitionable = $famous['famous/transitions/Transitionable'];
   var Easing = $famous['famous/transitions/Easing'];
+  var SpringTransition = $famous['famous/transitions/SpringTransition'];
+  Transitionable.registerMethod('spring', SpringTransition);
+
+  $scope.guessNumber = function(number) {
+    console.log(number);
+    var gamePacket = {
+      "request":"play",
+      "session_id":messageObject['session_id'],
+      "move": {
+        "bid":number
+      }
+    }
+    Service.send(gamePacket);
+  }
+
   var bcrypt = new bCrypt();
 
   // ** Properties (css)
@@ -43,6 +58,17 @@ function mainCtrl($scope,$rootScope,$state,$famous,$interval,Service) {
     }
   }
 
+  $scope.myGameSelect = {
+    properties: {
+      padding: '10px',
+      textAlign: 'center',
+      fontSize: '14px',
+      border: '5px solid white',
+      backgroundColor: '#fc5c4f',
+      color: 'white'
+    }
+  }
+
   $scope.gameGridOption = {
     properties: {
       textAlign: 'center',
@@ -52,21 +78,112 @@ function mainCtrl($scope,$rootScope,$state,$famous,$interval,Service) {
     }
   }
 
+  $scope.currentMessage = {
+    properties: {
+      textAlign: 'center',
+      fontSize: '12px',
+      padding: '2px',
+      border: '2px solid black',
+      borderRadius: '25px'
+    }
+  }
+
+  $scope.cardStyle = {
+    properties: {
+      textAlign: 'center',
+      fontSize: '14px',
+      border: '2px solid black',
+      borderRadius: '10px'
+    }
+  }
+
+  $scope.gamePlayGrid = {
+    content : '↑',
+    properties : {
+      color: '#fc5c4f',
+      fontSize : '80px',
+      textAlign : 'center',
+    }
+  }
+
+  $scope.player = {
+    properties : {
+      color:'white',
+      fontSize:'20px',
+      textAlign:'center'
+    }
+  }
+
+  $scope.guessTheNumberOptions = {
+    properties : {
+      color: 'white',
+      fontSize:'30px',
+      textAlign:'center'
+    }
+  }
+
   $scope.flexibleLayoutOptions = {
     ratios: [1,2.5]
   }
 
-  // ** Lobby animations
-  var angles = [
-  {angle : new Transitionable(0)},
-  {angle : new Transitionable(0)},
-  {angle : new Transitionable(0)},
-  {angle : new Transitionable(0)},
-  {angle : new Transitionable(0)},
-  {angle : new Transitionable(0)}
-  ];
+  $scope.gameGridTopDown = {
+    ratios: [1,2,1],
+    direction: 1
+  }
 
-  $scope.toggleLobby = function(index) {
+  $scope.gameGridMiddleRight = {
+    ratios: [1,2,1]
+  }
+
+  $scope.gameGridTopRight = {
+    ratios: [1,2,1]
+  }
+
+  $scope.cardsGrid = {
+    dimensions : [6,2]
+  }
+
+  $scope.arrow = function() {
+    return Transform.rotateZ(arrow);
+  }
+
+  $scope.players = {};
+  var arrow = Math.PI/2;
+
+  function setArrow() {
+    $scope.players = $scope.gameObject['players'];
+
+    var arrows = {};
+    arrows['North'] = 0;
+    arrows['East'] = Math.PI/2;
+    arrows['South'] = Math.PI;
+    arrows['West'] = Math.PI + Math.PI/2;
+
+    arrow = arrows[$scope.gameObject['currentTurn']];
+  }
+
+  $scope.playCard = function(index) {
+    var card = $scope.gameObject['cards'][index];
+    var gamePacket = {
+      "request":"play",
+      "session_id":messageObject['session_id'],
+      "move": {
+        "card":$scope.gameObject['cards'][index]
+      }
+    }
+    Service.send(gamePacket);
+  }
+
+  // ** Lobby animations
+
+  $scope.scales = [
+    {scale: new Transitionable([1, 1, 1])},
+    {scale: new Transitionable([1, 1, 1])}
+  ]
+
+  $scope.toggleLobby = function(index,game) {
+    var that = this;
+    that.game = game;
     var animating = true;
     var interval = $interval(function() {
       if(animating) {
@@ -85,7 +202,8 @@ function mainCtrl($scope,$rootScope,$state,$famous,$interval,Service) {
     var angle = angles[index].angle;
     angle.set(targetAngle, { duration: 700, curve: 'easeInOut' }, function() {
       angle.set(0, { duration: 700, curve: 'easeInOut' }, function() {
-        $state.go('main.game')
+        var state = ('main.' + that.game).toLowerCase()
+        $state.go(state)
         $interval.cancel(interval);
         interval = undefined;
       })
@@ -103,22 +221,13 @@ function mainCtrl($scope,$rootScope,$state,$famous,$interval,Service) {
   var EventHandler = $famous['famous/core/EventHandler'];
   $scope.eventHandler = new EventHandler();
 
-  $scope.list = [
-  {content: "Pinochle", color:"#b58900", players: '3'},
-  {content: "Hearts", color:"#cb4b16", players: '2'},
-  {content: "Hearts", color:"#dc322f", players: '1'},
-  {content: "Pinochle", color:"#d33682", players: '3'},
-  {content: "Pinochle", color:"#6c71c4", players: '2'},
-  {content: "Hearts", color:"#268bd2", players: '2'}
-  ];
-
   // ** Lobby functions
 
   $scope.joinGame = function(index) {
     var lobbyPacket = {
       "request":"join_game",
       "session_id":messageObject['session_id'],
-      "game_id":messageObject['games'][index]
+      "game_id":messageObject['games'][index]['game_id']
     }
     Service.send(lobbyPacket);
   }
@@ -132,14 +241,43 @@ function mainCtrl($scope,$rootScope,$state,$famous,$interval,Service) {
     Service.send(lobbyPacket);
   }
 
-  $scope.newGame = function() {
-    var lobbyPacket = {
-      "request":"new_game",
-      "session_id":messageObject['session_id'],
-      "game_type":messageObject['game_types'][0]
-    }
-    Service.send(lobbyPacket);
+  $scope.newGame = function(index) {
+      var lobbyPacket = {
+        "request":"new_game",
+        "session_id":messageObject['session_id'],
+        "game_type":messageObject['game_types'][index]
+      }
+      Service.send(lobbyPacket);
+      var game = ('main.' + messageObject['game_types'][index]).toLowerCase()
+      $state.go(game);
   }
+
+  $scope.lobbyButtonClick = function(index){
+    this.index = index;
+    var that = this;
+    var spring = {
+      method: 'spring',
+      period: 500,
+      dampingRatio: 0.3
+    }
+    $scope.scales[that.index]['scale'].set([1.1, 1.1, 1.1], spring, function() {
+      $scope.scales[that.index]['scale'].set([1, 1, 1], spring)
+    });
+    $scope.gameSelect(true)
+  }
+
+  $scope.gameSelect = function(on) {
+    var spring = {
+      method: 'spring',
+      period: 700,
+      dampingRatio: 0.5
+    };
+    on ? $scope.selectGameTransition.set([0,0,0], spring) :
+      $scope.selectGameTransition.set([1500,1500,0], {duration:700, curve:Easing.inBack})
+  }
+
+  $scope.selectGameTransition = new Transitionable([1500,1500,0]);
+
 
   // ** Login animations
 
@@ -249,14 +387,72 @@ function mainCtrl($scope,$rootScope,$state,$famous,$interval,Service) {
         console.log('received message lobby')
         messageObject['game_types'] = data.game_types
         messageObject['games'] = data.games
+        loadGames()
+        loadGameTypes()
       }
       if(data.response === 'game') {
         console.log('received message game')
         messageObject['game_message'] = data.game_message
+        $scope.gameObject = messageObject['game_message']
+        var positions = $scope.gameObject['players'];
+        setArrow();
+      }
+      if(data.response === 'gameover') {
+        console.log('received message gameover')
+        $scope.gameObject = {}
+        $state.go('main.lobby')
       }
     });
   });
 
+  $scope.gameObject = {}
+
+  var colors = [
+  {color:"#b58900"},
+  {color:"#cb4b16"},
+  {color:"#dc322f"},
+  {color:"#d33682"},
+  {color:"#6c71c4"},
+  {color:"#268bd2"},
+  ]
+
+  var angles = [];
+  $scope.list = [];
+  // Load Games from Server
+  function loadGames() {
+    $scope.list = [];
+    var games = messageObject['games']
+    var i = 0;
+    for(var key in games) {
+      var temp = {};
+      var angle = {};
+      temp['game_id'] = games[key]['game_id']
+      temp['game_type'] = games[key]['game_type']
+      temp['num_players'] = games[key]['num_players']
+      temp['color'] = colors[i%6].color;
+      $scope.list.push(temp)
+      angle['angle'] = new Transitionable(0)
+      angles.push(angle);
+      i++;
+    }
+
+    // Update Games Grid layout
+    $scope.myGridLayoutOptions = {
+      dimensions: [2, ($scope.list.length/2)]
+    }
+  }
+
+  // Load Game Types
+  $scope.gameTypes = [];
+  function loadGameTypes() {
+    $scope.gameTypes = [];
+    var gameTypes = messageObject['game_types'];
+    for(var key in gameTypes) {
+      var temp = {}
+      temp['game_type'] = gameTypes[key];
+      $scope.gameTypes.push(temp);
+    }
+  }
 
   //** Login/Create Functions
 
@@ -322,6 +518,14 @@ function mainCtrl($scope,$rootScope,$state,$famous,$interval,Service) {
     Service.send(loginPacket);
     messageObject['salt'] = undefined;
   }
+
+
+  $scope.$watch(messageObject['session_id'], function() {
+    if(messageObject['session_id'] === undefined) {
+      $state.go('main.login')
+    }
+  })
+
 }
 
 /*

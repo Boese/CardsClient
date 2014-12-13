@@ -1,14 +1,23 @@
 <fa-modifier>
 <fa-flexible-layout fa-options="flexibleLayoutOptions">
   <fa-modifier fa-opacity="0.8">
+    <fa-surface fa-background-color="'white'"></fa-surface>
     <fa-flexible-layout fa-options="mySidebarFlexibleOptions">
-        <fa-surface fa-click="newGame()" fa-options="mySidebar">
+      <fa-modifier fa-origin="[0.5, 0.5]"
+      fa-align="[0.5, 0.5]"
+      fa-scale="scales[0]['scale'].get()">
+        <fa-surface fa-z-index="10" fa-click="lobbyButtonClick(0)" fa-options="mySidebar">
           New Game
         </fa-surface>
-        <fa-surface fa-click="randomGame()" fa-options="mySidebar">
+      </fa-modifier>
+      <fa-modifier fa-origin="[0.5, 0.5]"
+      fa-align="[0.5, 0.5]"
+      fa-scale="scales[1]['scale'].get()">
+        <fa-surface fa-z-index="10" fa-click="lobbyButtonClick(1)" fa-options="mySidebar">
           Random Game
         </fa-surface>
-        <fa-surface fa-background-color="'white'"></fa-surface>
+      </fa-modifier>
+        <fa-surface></fa-surface>
     </fa-flexible-layout>
 </fa-modifier>
 
@@ -19,10 +28,9 @@
     <fa-view ng-repeat="item in list">
 
     <fa-modifier fa-rotate-y="myAngleLobby($index)" fa-transform="myTransformLobby($index)" fa-opacity="0.8">
-      <fa-surface fa-options="gameGridOption" fa-background-color="item.color" fa-color="'white'" fa-pipe-to="eventHandler">
-        <div class="row"><div class="well well-sm" style="background:white;color:black;font-size=25px">{{item.content}}</div></div>
-        <div class="row">players : {{item.players}}</div>
-        <div class="row"><div ng-click="toggleLobby($index)" class="btn btn-info">Join Game!</div></div>
+      <fa-surface fa-click="toggleLobby($index,item.game_type);joinGame($index)" fa-z-index="50" fa-options="gameGridOption" fa-background-color="item.color" fa-color="'white'" fa-pipe-to="eventHandler">
+        <div class="row"><div class="well well-sm" style="background:white;color:black;font-size=25px">{{item.game_type}}</div></div>
+        <div class="row">players : {{item.num_players}}</div>
       </fa-surface>
     </fa-modifier>
 </fa-view>
@@ -31,4 +39,15 @@
 </fa-modifier>
 </fa-scroll-view>
 </fa-flexible-layout>
+</fa-modifier>
+
+<fa-modifier fa-size="[200,300]" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-translate="selectGameTransition.get()">
+  <fa-surface fa-z-index="100" fa-options = myGameSelect>
+    <div ng-repeat="gameType in gameTypes">
+      <button ng-click="gameSelect(false);newGame($index)" class="btn btn-info center-block">{{gameType['game_type']}}</button>
+      <br>
+    </div>
+    <hr>
+      <button ng-click="gameSelect(false)" class="btn btn-warning">Close</button>
+  </fa-surface>
 </fa-modifier>

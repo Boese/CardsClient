@@ -12,13 +12,13 @@
       </fa-modifier>
       <!--Game ScoreBoard-->
       <fa-modifier fa-scale=".8">
-        <fa-surface fa-options="mySidebar"> {{gameObject['lastMove']['card']['face']}} {{gameObject['lastMove']['card']['suit']}}</fa-surface>
+        <fa-surface fa-options="mySidebar"> {{gameObject['lastMove']['bid']}} </fa-surface>
       </fa-modifier>
     </fa-flexible-layout>
     <fa-flexible-layout fa-options="gameGridMiddleRight">
       <!--Player West Grid-->
       <fa-modifier fa-align="[0,0.5]">
-        <fa-surface fa-options="player" fa-color="'white'">{{players['West']}}</fa-surface>
+        <fa-surface></fa-surface>
       </fa-modifier>
       <!--Game Play Grid-->
       <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-transform="arrow()">
@@ -26,15 +26,18 @@
       </fa-modifier>
       <!--Player East Grid-->
       <fa-modifier fa-align="[0,0.5]">
-        <fa-surface fa-options="player" fa-color="'white'">{{players['East']}}</fa-surface>
+        <fa-surface></fa-surface>
       </fa-modifier>
     </fa-flexible-layout>
     <!--Player South Grid-->
-    <fa-grid-layout fa-options="cardsGrid">
-      <fa-modifier fa-scale=".8" ng-repeat="card in gameObject['cards'] track by $index">
-        <fa-surface fa-click="playCard($index)" fa-z-index="10" fa-options="cardStyle" fa-background-color="'white'" fa-color="'black'">{{card['face']}} {{card['suit']}}</fa-surface>
+      <fa-modifier>
+        <fa-surface fa-options="guessTheNumberOptions" fa-z-index="50">
+          <div class="row">
+            <input type="number" ng-model="number"></input>
+            <button ng-click="guessNumber(number)" class="btn btn-primary">Send Number</button>
+          </div>
+        </fa-surface>
       </fa-modifier>
-    </fa-grid-layout>
   </fa-flexible-layout>
 
 </fa-modifier>

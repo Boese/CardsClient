@@ -21,9 +21,13 @@ angular.module('cardsApp', ['cardsApp.socket','cardsApp.controllers'])
     url: '/lobby',
     templateUrl: 'partials/main.lobby.html'
   })
-  .state('main.game', {
-    url: '/game',
+  .state('main.pinochle', {
+    url: '/game-pinochle',
     templateUrl: 'partials/main.game.html'
+  })
+  .state('main.guessthenumber', {
+    url: '/game-guessthenumber',
+    templateUrl: 'partials/main.guessTheNumber.html'
   })
 
 });
