@@ -41,13 +41,12 @@
 </fa-flexible-layout>
 </fa-modifier>
 
-<fa-modifier fa-size="[200,300]" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-translate="selectGameTransition.get()">
-  <fa-surface fa-z-index="100" fa-options = myGameSelect>
+<fa-modifier fa-size="[200,200]" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-translate="selectGameTransition.get()">
+  <fa-surface fa-size="[200,true]" fa-z-index="100" fa-options = "myGameSelect">
     <div ng-repeat="gameType in gameTypes">
-      <button ng-click="gameSelect(false);newGame($index)" class="btn btn-info center-block">{{gameType['game_type']}}</button>
+      <button ng-click="gameSelect(false);newGame($index)" class="btn btn-info btn-sm center-block">{{gameType['game_type']}}</button>
       <br>
     </div>
-    <hr>
-      <button ng-click="gameSelect(false)" class="btn btn-warning">Close</button>
+      <button ng-click="gameSelect(false)" class="btn btn-warning btn-sm">Close</button>
   </fa-surface>
 </fa-modifier>

@@ -9,25 +9,22 @@ angular.module('cardsApp', ['cardsApp.socket','cardsApp.controllers'])
     templateUrl: 'partials/main.html',
     controller:'mainCtrl'
   })
-  .state('main.login', {
-    url: "/login",
-    templateUrl: 'partials/main.login.html'
-  })
-  .state('main.create-account', {
-    url: '/create-account',
-    templateUrl: 'partials/main.create-account.html'
-  })
-  .state('main.lobby', {
-    url: '/lobby',
-    templateUrl: 'partials/main.lobby.html'
-  })
-  .state('main.pinochle', {
-    url: '/game-pinochle',
-    templateUrl: 'partials/main.game.html'
-  })
-  .state('main.guessthenumber', {
-    url: '/game-guessthenumber',
-    templateUrl: 'partials/main.guessTheNumber.html'
-  })
+    .state('main.login', {
+      url: "/login",
+      templateUrl: 'partials/login.html'
+    })
+    .state('main.create-account', {
+      url: '/create-account',
+      templateUrl: 'partials/create-account.html'
+    })
+    .state('main.lobby', {
+      url: '/lobby',
+      templateUrl: 'partials/lobby.html'
+    })
+    .state('main.pinochle', {
+      url: '/game-pinochle',
+      templateUrl: 'partials/game.html',
+      controller: 'pinochleCtrl'
+    })
 
 });

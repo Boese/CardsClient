@@ -8,21 +8,18 @@
         <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
         <input type="text" ng-model="loginModel.username" class="form-control" placeholder="username">
       </div>
-      <br>
       <div class="input-group">
         <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
         <input type="password" ng-model="loginModel.password" class="form-control" placeholder="password">
       </div>
-      <hr>
-      <button type="submit" ng-click="login()" class="btn btn-lg btn-primary">Submit</button>
+      <br>
+      <button type="submit" ng-click="login()" class="btn btn-primary">Submit</button>
     </form>
-    <div class="col-md-6">
-      <br>
-      <button class="btn btn-default center-block" ng-click="toggle('main.create-account')">create account</button>
+    <div class="col-xs-6">
+      <button class="btn btn-default btn-sm center-block" ng-click="toggle('main.create-account')">create account</button>
     </div>
-    <div class="col-md-6">
-      <br>
-      <button class="btn btn-default center-block" ng-click="forgotPassword()">forgot password</button>
+    <div class="col-xs-6">
+      <button class="btn btn-default btn-sm center-block" ng-click="forgotPassword()">forgot password</button>
     </div>
   </fa-surface>
 </fa-modifier>
