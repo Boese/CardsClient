@@ -4,18 +4,18 @@
 
     <!--Header-->
     <fa-modifier fa-size="[undefined, 30]">
-      <fa-surface fa-options="myHeader" fa-z-index="100" fa-background-color="'#fc5c4f'" fa-color="'white'">
+      <fa-surface fa-options="myHeader" fa-z-index="100">
         Cards!
       </fa-surface>
     </fa-modifier>
 
     <!--Body-->
-    <fa-modifier fa-translate="bodyTransitionable.get()">
+    <fa-modifier>
         <div ui-view></div>
     </fa-modifier>
 
     <!--Footer-->
-    <fa-surface fa-options="myFooter" fa-z-index="100" fa-size="[undefined, 30]" fa-background-color="'#fc5c4f'" fa-color="'black'">
+    <fa-surface fa-options="myFooter" fa-z-index="100" fa-size="[undefined, 30]">
       Built using Famous-Angular @Chris Boese
     </fa-surface>
   </fa-header-footer-layout>

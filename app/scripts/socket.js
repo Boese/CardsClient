@@ -5,30 +5,39 @@ angular.module('cardsApp.socket', [])
 function Service($q,$rootScope) {
   // We return this object to anything injecting our service
   var Service = {};
-  // Create our websocket object with the address to the websocket
-  var ws = new WebSocket("ws://localhost:5218");
-  //var ws = new WebSocket("ws://10.0.2.2:3000");
-  //var ws = new WebSocket("ws://76.14.226.157:5218")
-
-  // Socket Opened
-  ws.onopen = function(){
-    console.log("Socket has been opened!");
-  };
-
-  ws.onclose = function() {
-    console.log("Socket disconnected!");
-  }
-
-  // Parse response from Server
-  ws.onmessage = function(message) {
-    listener(JSON.parse(message.data));
-  };
+  var ws;
 
   // Send requests
   Service.send = function(request) {
-    var defer = $q.defer();
-    ws.send(JSON.stringify(request));
-    return defer.promise;
+    if(ws.readyState === 3)
+      $rootScope.$broadcast('serverDown');
+    else
+      ws.send(JSON.stringify(request));
+  }
+
+  // Create our websocket object with the address to the websocket
+  Service.connect = function() {
+      ws = new WebSocket("ws://localhost:5218");
+      //var ws = new WebSocket("ws://10.0.2.2:3000");
+      //var ws = new WebSocket("ws://76.14.226.157:5218")
+
+      // Socket Opened
+      ws.onopen = function(){
+        console.log("Socket has been opened!");
+      };
+
+      ws.onclose = function() {
+        console.log("Socket disconnected!");
+      }
+
+      // Parse response from Server
+      ws.onmessage = function(message) {
+        listener(JSON.parse(message.data));
+      };
+
+      ws.onerror = function(error) {
+        console.log(error);
+      }
   }
 
   // Emit events
@@ -49,5 +58,6 @@ function Service($q,$rootScope) {
       console.log('unkown response : ' + data)
   }
 
+  Service.connect();
   return Service;
 };

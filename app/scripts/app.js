@@ -1,5 +1,5 @@
 'use strict'
-angular.module('cardsApp', ['cardsApp.socket','cardsApp.controllers'])
+angular.module('cardsApp', ['cardsApp.socket','cardsApp.controllers','ui.bootstrap'])
   .config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/login");
 
@@ -11,15 +11,13 @@ angular.module('cardsApp', ['cardsApp.socket','cardsApp.controllers'])
   })
     .state('main.login', {
       url: "/login",
-      templateUrl: 'partials/login.html'
-    })
-    .state('main.create-account', {
-      url: '/create-account',
-      templateUrl: 'partials/create-account.html'
+      templateUrl: 'partials/login.html',
+      controller: 'loginCtrl'
     })
     .state('main.lobby', {
       url: '/lobby',
-      templateUrl: 'partials/lobby.html'
+      templateUrl: 'partials/lobby.html',
+      controller: 'lobbyCtrl'
     })
     .state('main.pinochle', {
       url: '/game-pinochle',
