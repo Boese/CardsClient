@@ -1,78 +1,50 @@
-<fa-modifier>
+
   <!--GameBoard Background-->
   <fa-image-surface fa-image-url="images/cardTable.png"></fa-image-surface>
 
-  <fa-flexible-layout fa-options="gameGridTopDown">
-    <fa-flexible-layout fa-options="gameGridTopRight">
-      <!--Game Message-->
-      <fa-modifier fa-align="[0.1,0.1]">
-        <fa-surface fa-z-index="10" fa-size="[true,true]"><button class="btn btn-sm btn-primary" ui-sref="main.lobby">X</button></fa-surface>
-      </fa-modifier>
-      <!--Player North Grid-->
-      <fa-grid-layout fa-options="playersGridDisplay">
-          <fa-surface fa-options="player">{{players.North}}</fa-surface>
-          <fa-surface ng-if="playersMeld.North" fa-options="playerMeld">North Meld : {{playersMeld.North}}</fa-surface>
-      </fa-grid-layout>
-      <!--Game ScoreBoard-->
-      <fa-modifier fa-scale=".8">
-        <fa-surface fa-options="scoreBoard">
-            <p>North South : {{team1Score}}</p>
-            <p>West East : {{team2Score}}</p>
-        </fa-surface>
-      </fa-modifier>
-    </fa-flexible-layout>
-    <fa-flexible-layout fa-options="gameGridMiddleRight">
-      <!--Player West Grid-->
-      <fa-grid-layout fa-options="playersGridDisplay">
-          <fa-surface fa-options="player">{{players.West}}</fa-surface>
-          <fa-surface ng-if="playersMeld.West" fa-options="playerMeld">West Meld : {{playersMeld.West}}</fa-surface>
-      </fa-grid-layout>
-      <!--Game Play Grid-->
-      <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-transform="arrow()">
-        <fa-surface fa-options="gamePlayGrid"></fa-surface>
-      </fa-modifier>
-      <!--Player East Grid-->
-      <fa-grid-layout fa-options="playersGridDisplay">
-          <fa-surface fa-options="player">{{players.East}}</fa-surface>
-          <fa-surface ng-if="playersMeld.East" fa-options="playerMeld">East Meld : {{playersMeld.East}}</fa-surface>
-      </fa-grid-layout>
-    </fa-flexible-layout>
-    <!--Player South Grid-->
-    <fa-flexible-layout fa-options="playersGrid">
-      <fa-modifier>
-        <fa-surface ng-if="playersMeld.South" fa-options="playerMeld">South Meld : {{playersMeld.South}}</fa-surface>
-      </fa-modifier>
-      <fa-grid-layout fa-options="cardsGrid">
-        <fa-modifier fa-scale=".8" ng-repeat="card in cards track by $index">
-          <fa-surface fa-click="addRemoveCards($index)" fa-z-index="10" fa-options="cardStyles[$index]">{{card.face}} {{card.suit}}</fa-surface>
-        </fa-modifier>
-      </fa-grid-layout>
-    </fa-flexible-layout>
-  </fa-flexible-layout>
+  <!--Players-->
+  <fa-modifier ng-repeat="player in players"
+               fa-origin="[0.5,0.5]"
+               fa-align="[0.5,0.5]"
+               fa-translate="player.position.get()">
+      <fa-sequential-layout>
+        <fa-surface fa-size="[true,75]" fa-options="playerStyle">{{player.name}}</fa-surface>
+        <fa-image-surface fa-size="[true,true]" fa-image-url="images/user.png"></fa-image-surface>
+      </fa-sequential-layout>
+  </fa-modifier>
 
+  <!--Player Cards-->
+  <fa-modifier fa-size="[undefined,height/5]"
+               fa-origin="[0.5,0.5]"
+               fa-align="[0.5,0.85]">
+    <fa-grid-layout fa-options="cardsGrid">
+          <fa-surface fa-click="addRemoveCards($index)" ng-repeat="card in cards track by $index">
+            <img ng-style="getCardSprite(card)"></img>
+          </fa-surface>
+    </fa-grid-layout>
+  </fa-modifier>
+
+    <!--Game Message-->
     <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.3]">
-      <fa-surface fa-size="[200,true]" fa-z-index="10" fa-options="currentMessage">{{game_message}}, {{lastMove}}</fa-surface>
+      <fa-surface fa-size="[200,true]" fa-options="currentMessage">{{game_message}} {{lastMove}}</fa-surface>
     </fa-modifier>
 
     <!--Bidding-->
-    <fa-modifier ng-if="bidding && !dealing" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]">
-      <fa-surface fa-size="[true,true]" fa-z-index="10" fa-options="currentMessage">
-        <div class="row" >
-          <form class="form text-center">
-            <div class="form-group">
-              <div class="input-group">
-                <input style="width:6em" type="number" class="form-control" ng-model="currentbid">
-              </div>
-            </div>
-            <button ng-click="sendBid(currentbid)" class="btn btn-primary">bid</button>
-          </form>
-        </div>
-      </fa-surface>
+    <fa-modifier ng-if="bidding && !dealing" fa-size="[130,50]" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-scale="[3,3]">
+      <fa-grid-layout fa-options="{dimensions:[3,1]}">
+        <fa-surface fa-click="sendBid(0)" fa-options="bidStyle">PASS</fa-surface>
+        <fa-grid-layout fa-options="{dimensions:[1,3]}">
+          <fa-image-surface fa-click="bid('up')" fa-image-url="images/arrowUp.png"></fa-image-surface>
+          <fa-surface fa-options="bidCounterStyle">{{currentbid}}</fa-surface>
+          <fa-image-surface fa-click="bid('down')" fa-image-url="images/arrowDown.png"></fa-image-surface>
+        </fa-grid-layout>
+        <fa-surface fa-click="sendBid(currentbid)" fa-options="bidStyle">BID</fa-surface>
+      </fa-grid-layout>
     </fa-modifier>
 
     <!--Trump-->
     <fa-modifier ng-if="trump && !dealing" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]">
-      <fa-surface fa-size="[true,true]" fa-z-index="10" fa-options="currentMessage">
+      <fa-surface fa-size="[true,true]" fa-options="currentMessage">
           <button ng-click="sendTrump('Hearts')" class="btn btn-sm btn-primary">Hearts</button>
           <button ng-click="sendTrump('Spades')" class="btn btn-sm btn-info">Spades</button>
           <button ng-click="sendTrump('Diamonds')" class="btn btn-sm btn-primary">Diamonds</button>
@@ -80,4 +52,12 @@
       </fa-surface>
     </fa-modifier>
 
-</fa-modifier>
+    <!--DEALING-->
+    <fa-modifier ng-repeat="card in deck"
+                 fa-size=[100,140]
+                 fa-origin=[0.5,0.5]
+                 fa-align=[0.5,0.5]
+                 fa-translate="card.position.get()"
+                 fa-rotate-z="card.angleZ.get()">
+        <fa-image-surface fa-options="cardStyle" fa-image-url="images/cardBack.png"></fa-image-surface>
+    </fa-modifier>

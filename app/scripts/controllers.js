@@ -5,4 +5,4 @@ angular.module('cardsApp.controllers',
    'cardsApp.mainCtrl',
    'cardsApp.loginCtrl',
    'cardsApp.lobbyCtrl',
-   'cardsApp.pinochleCtrl'])
+   'cardsApp.GameCtrl'])

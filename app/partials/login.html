@@ -1,7 +1,7 @@
 
 <fa-modifier fa-origin="[0.5,1]" fa-align="[0.5,1]" fa-transform="loginScaleTransform()" fa-opacity="0.95">
 
-  <fa-modifier fa-transform="loginAngleTransform()" fa-opacity="0.95">
+  <fa-modifier fa-transform="loginAngleTransform()" fa-transform="transformLobby()">
 
     <fa-surface fa-options="loginSurface" fa-touchstart="loginTouchStart($event)" fa-touchend="loginTouchEnd($event)" fa-touchmove="loginTouchMove($event)">
       <h4>{{loginState.login}}</h4>
@@ -27,5 +27,17 @@
     </fa-surface>
 
   </fa-modifier>
+
+    <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.6]" fa-translate="swipe.left.get()" fa-scale="[10,10,100]">
+      <fa-surface ng-if="swipe.activeLeft" fa-size="[true,true]" fa-color="'#fc5c4f'">⇠</fa-surface>
+    </fa-modifier>
+
+    <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.6]" fa-translate="swipe.down.get()" fa-scale="[10,10,100]">
+      <fa-surface ng-if="swipe.activeDown" fa-size="[true,true]" fa-color="'#fc5c4f'">⇣</fa-surface>
+    </fa-modifier>
+
+    <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-scale="[5,5,1]">
+      <fa-surface ng-if="swipe.activeDown || swipe.activeLeft" fa-size="[true,true]" fa-color="'#fc5c4f'">{{swipe.title}}</fa-surface>
+    </fa-modifier>
 
 </fa-modifier>

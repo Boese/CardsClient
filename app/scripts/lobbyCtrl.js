@@ -12,8 +12,12 @@ function lobbyCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
   Transitionable.registerMethod('spring', SpringTransition);
   Transitionable.registerMethod('snap', SnapTransition);
 
-  var game_types, games;
+  // Get Session Id
+  var session_id;
+  $rootScope.$broadcast('getSession');
+  $scope.$on('session')
 
+  var game_types, games;
   // Event lobby info received
   $scope.$on('lobby',function(event,args) {
     var lobby = args.lobby;
@@ -23,35 +27,20 @@ function lobbyCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
     loadGameTypes()
   })
 
-  // Event response
-  $scope.$on('response',function(event,args) {
-    var response = args.response;
-    $scope.login();
-    $scope.animateBack();
-    $scope.message = response;
-  })
+  $rootScope.$broadcast('getGames');
 
   $scope.scales = [
-{scale: new Transitionable([1, 1, 1])},
-{scale: new Transitionable([1, 1, 1])}
-]
-var angles = [];
-$scope.list = [];
+    {scale: new Transitionable([1, 1, 1])},
+    {scale: new Transitionable([1, 1, 1])}
+  ]
+  var angles = [];
+  $scope.list = [];
 
 $scope.toggleLobby = function(index,game) {
   var that = this;
   that.game = game;
-  var animating = true;
-  var interval = $interval(function() {
-    if(animating) {
-      _modPerspective.set(1000)
-      animating = false;
-    }
-    else {
-      _modPerspective.set(999)
-      animating = true;
-    }
-  }, 60);
+  $rootScope.$broadcase('animating');
+
   var targetAngle = -defaultAngle;
 
   if (angles[index].angle.isActive()) angle.halt();
@@ -60,9 +49,8 @@ $scope.toggleLobby = function(index,game) {
   angle.set(targetAngle, { duration: 700, curve: 'easeInOut' }, function() {
     angle.set(0, { duration: 700, curve: 'easeInOut' }, function() {
       var state = ('main.' + that.game).toLowerCase()
+      $rootScope.$broadcase('stopAnimating');
       $state.go(state)
-      $interval.cancel(interval);
-      interval = undefined;
     })
   });
 }
@@ -104,8 +92,7 @@ $scope.newGame = function(index) {
     "game_type":game_types[index]
   }
   Service.send(lobbyPacket);
-  var game = ('main.' + game_types[index]).toLowerCase()
-  $state.go(game);
+  $state.go('main.game');
 }
 
 $scope.lobbyButtonClick = function(index){
@@ -171,15 +158,14 @@ function loadGameTypes() {
   }
 }
 
-var colors = [
-{color:"#b58900"},
-{color:"#cb4b16"},
-{color:"#dc322f"},
-{color:"#d33682"},
-{color:"#6c71c4"},
-{color:"#268bd2"},
-]
-
+  var colors = [
+    {color:"#b58900"},
+    {color:"#cb4b16"},
+    {color:"#dc322f"},
+    {color:"#d33682"},
+    {color:"#6c71c4"},
+    {color:"#268bd2"},
+  ]
 
   $scope.flexibleLayoutOptions = {
     ratios: [1,2.5]

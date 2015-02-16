@@ -12,6 +12,52 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
   Transitionable.registerMethod('spring', SpringTransition);
   Transitionable.registerMethod('snap', SnapTransition);
 
+  // Swipe Animations
+  $scope.swipe = {
+    activeDown: false,
+    activeLeft: false,
+    title: 'Login',
+    down: new Transitionable([0,0,0]),
+    left: new Transitionable([0,0,0])
+  };
+
+  (function() {
+    $scope.swipe.activeDown = true;
+    swipeDownAnimation(3);
+  })()
+
+  function swipeDownAnimation(swipeCount) {
+    if(swipeCount === 0) {
+      $scope.swipe.activeDown = false;
+      $scope.swipe.activeLeft = true;
+      $scope.swipe.title = 'Account'
+      swipeLeftAnimation(3);
+      $scope.$apply()
+      return;
+    }
+
+    $scope.swipe.down.set([0,10,0], {duration:700,curve:Easing.inOut}, function() {
+      $scope.swipe.down.set([0,0,0], {duration:0,curve:Easing.inOut}, function() {
+        swipeDownAnimation(--swipeCount);
+      })
+    })
+  }
+
+  function swipeLeftAnimation(swipeCount) {
+    if(swipeCount === 0) {
+      $scope.swipe.activeLeft = false;
+      $scope.$apply()
+      return;
+    }
+
+    $scope.swipe.left.set([-10,0,0], {duration:700,curve:Easing.inOut}, function() {
+      $scope.swipe.left.set([0,0,0], {duration:0,curve:Easing.inOut}, function() {
+        swipeLeftAnimation(--swipeCount);
+      })
+    })
+  }
+
+  // Login navigation animations
   var touchstartX = 0;
   var touchstartY = 0;
   var angle = new Transitionable(0);
@@ -34,6 +80,8 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
 
   // Capture touch start in X and Y
   $scope.loginTouchStart = function($event) {
+    if($scope.swipe.activeDown || $scope.swipe.activeLeft)
+      return;
     $rootScope.$broadcast('animating');
     touchstartX = $event.changedTouches[0].clientX;
     touchstartY = $event.changedTouches[0].clientY;
@@ -41,6 +89,8 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
 
   // Update transforms based on state and X vs Y direction
   $scope.loginTouchMove = function($event) {
+    if($scope.swipe.activeDown || $scope.swipe.activeLeft)
+      return;
     var deltaX = $event.changedTouches[0].clientX - touchstartX;
     var deltaY = $event.changedTouches[0].clientY - touchstartY;
 
@@ -67,6 +117,8 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
 
   // Handle touch end to see if state transition has occured
   $scope.loginTouchEnd = function($event) {
+    if($scope.swipe.activeDown || $scope.swipe.activeLeft)
+      return;
     var deltaX = $event.changedTouches[0].clientX - touchstartX;
     var deltaY = $event.changedTouches[0].clientY - touchstartY;
 
@@ -93,6 +145,9 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
     $rootScope.$broadcast('stopAnimating');
   }
 
+
+  //** CSS Properties
+
   // Login css
   $scope.loginSurface = {
     properties: {
@@ -101,6 +156,8 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
       padding: '5% 20% 5% 20%'
     }
   }
+
+  //** Socket Events
 
   // Event salt received
   $scope.$on('salt',function(event,args) {
@@ -111,7 +168,7 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
   // Event recevied session_id
   $scope.$on('session_id',function(event,args) {
     session_id = args.session_id;
-    $state.go('main.lobby')
+    $rootScope.$broadcast('animateBody', {transition:{to:'main.lobby'}})
   })
 
   // Event Created account
@@ -127,10 +184,7 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
     $scope.message = response;
   })
 
-  // Server Down
-  $scope.$on('serverDown', function(event,args) {
-    $scope.message = 'Server is down...';
-  })
+  //** Login actions
 
   var salt, session_id;
   var bcrypt = new bCrypt();
