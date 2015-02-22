@@ -55,6 +55,32 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
     setArrow(game.currentTurn);
   })
 
+  // Moving card
+  var x = 0;
+  var y = 0;
+  $scope.cardTouchStart = function(event,card) {
+    x = event.changedTouches[0].clientX - card.position.state[0];
+    y = event.changedTouches[0].clientY - card.position.state[1];
+  }
+
+  $scope.cardTouchMove = function(event,card) {
+    var deltaX = event.changedTouches[0].clientX - x;
+    var deltaY = event.changedTouches[0].clientY - y;
+    card.position.set([deltaX,deltaY,0])
+  }
+
+  $scope.cardTouchEnd = function(event,card) {
+    var middleY = $scope.height/5
+
+    var destY = (Math.abs(card.position.state[1]) <= middleY/2) ? 0 : middleY;
+
+    if(destY === 0)
+      card.position.set([0,0,0]);
+    else {
+      card.position.set([0,-middleY,0]);
+    }
+  }
+
   // Send Move
   $scope.sendBid = function(number) {
     var gamePacket = {
@@ -80,19 +106,19 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
 
   // Game
 
-  function passCards(cards) {
+  function passCards() {
     var gamePacket = {
       "request":"play",
       "session_id":session_id,
       "move": {
-        "cards": cards
+        "cards": passCards
       }
     }
     Service.send(gamePacket);
-    cards = []
+    passCards = []
   }
 
-  $scope.playCard = function(card) {
+  function playCard(card) {
     var gamePacket = {
       "request":"play",
       "session_id":session_id,
@@ -111,7 +137,7 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
   function setPositions(players) {
     $scope.players = [];
     var positionAngle = (2 * Math.PI)/players.length;
-    var positionOffset = (($window.innerHeight < $window.innerWidth) ? $window.innerHeight : $window.innerWidth)/2 -50;
+    var positionOffset = (($scope.height < $scope.width) ? $scope.height : $scope.width)/2 -50;
 
     for(var i = 1; i < players.length; i++) {
       $scope.players.push({
@@ -120,29 +146,6 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
       })
     }
   }
-
-  var players = [
-    {name:'ME'},
-    {name:'Chris'},
-    {name:'Chris'},
-    {name:'Chris'}
-  ]
-  setPositions(players)
-
-  var cards = [
-    {suit:'clubs',face:'nine'},
-    {suit:'clubs',face:'ace'},
-    {suit:'diamonds',face:'king'},
-    {suit:'diamonds',face:'queen'},
-    {suit:'diamonds',face:'queen'},
-    {suit:'hearts',face:'nine'},
-    {suit:'hearts',face:'ten'},
-    {suit:'hearts',face:'jack'},
-    {suit:'spades',face:'king'},
-    {suit:'spades',face:'ten'},
-    {suit:'spades',face:'nine'},
-    {suit:'spades',face:'ace'}
-    ];
 
   function Deal(message) {
     $scope.dealing = true;
@@ -228,6 +231,18 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
     }
   }
 
+  $scope.optionStyle = {
+    properties: {
+      color: 'white',
+      textAlign: 'center',
+      backgroundColor: 'blue',
+      fontSize : '30px',
+      padding: '10px',
+      border: '2px solid black',
+      borderRadius: '20px'
+    }
+  }
+
   $scope.bidCounterStyle = {
     properties: {
       textAlign: 'center',
@@ -235,12 +250,15 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
     }
   }
 
-  $scope.scoreBoard = {
+  $scope.scoreboardStyle = {
+    content : 'Scoreboard',
     properties : {
       color: 'white',
-      backgroundColor: 'blue',
-      fontSize : '14px',
-      textAlign : 'center'
+      backgroundColor: 'black',
+      fontSize : '30px',
+      textAlign : 'center',
+      borderRadius: '20px',
+      boxShadow: '10px 10px 20px 10px white'
     }
   }
 
@@ -288,8 +306,9 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
   //** Animations **//
 
   // Deal cards
-  function DealCards (cardSize, dealBy, numPlayers) {
+  function DealCards (cardSize, dealBy) {
     var deferred = $q.defer();
+    var numPlayers = players.length
 
     $scope.deck = [];
     for (var i = 0; i < cardSize; i++) {
@@ -303,7 +322,9 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
     var positionCounter = 0;
     var cardsDealt = cardSize;
     var positionAngle = (2 * Math.PI)/numPlayers
-    var position = ($window.innerHeight > $window.innerWidth) ? $window.innerHeight : $window.innerWidth;
+    var position = ($scope.height > $scope.width) ? $scope.height : $scope.width;
+    var playerDeal = false;
+    var time = 150;
     $scope.cards = [];
 
     var deal = function () {
@@ -314,21 +335,28 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
           angle = -((Math.PI * 2) - angle)
         }
 
+        if(positionCounter % numPlayers === 0) {
+          playerDeal = true;
+        } else {
+          playerDeal = false;
+        }
         for(var i = 0; i < dealBy; i++) {
-          $scope.deck[cardsDealt - 1].angleZ.set([angle], {duration: 300}, function() {
-            if(positionCounter % numPlayers === 0) {
+          $scope.deck[cardsDealt - 1].angleZ.set([angle], {duration: time}, function() {
+            if(playerDeal) {
               $timeout(function() {
-                $scope.cards.push(cards[0]);
-                cards.splice(0,1);
+                  $scope.cards.push(cards[0]);
+                  $scope.cards[$scope.cards.length - 1].position = new Transitionable([0,0,0]);
+                  cards.splice(0,1);
+                  $scope.cardsGrid.dimensions = [($scope.cards.length < 6) ? 6 : Math.ceil($scope.cards.length/2),2];
               })
             }
           });
-          $scope.deck[cardsDealt - 1].position.set([300*i, position + 100*i ,0], {method:'snap', period:200, dampingRatio:20});
+          $scope.deck[cardsDealt - 1].position.set([300*i, position + 100*i ,0], {method:'snap', period:time, dampingRatio:20});
           cardsDealt--;
         }
         positionCounter++;
 
-        setTimeout(deal, 300);
+        setTimeout(deal, 2*time + 10);
       } else {
         deferred.resolve();
       }
@@ -363,5 +391,58 @@ function GameCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$q,
 
     return background;
   }
-  DealCards(48,3,4)
+
+  $scope.option = false;
+  $scope.options = [
+    {option: 'Hearts'},
+    {option: 'Spades'},
+    {option: 'Clubs'}
+  ]
+
+  var cards = [
+    {suit:'clubs',face:'nine'},
+    {suit:'clubs',face:'ace'},
+    {suit:'diamonds',face:'king'},
+    {suit:'diamonds',face:'queen'},
+    {suit:'diamonds',face:'queen'},
+    {suit:'hearts',face:'nine'},
+    {suit:'hearts',face:'ten'},
+    {suit:'hearts',face:'jack'},
+    {suit:'spades',face:'king'},
+    {suit:'spades',face:'ten'},
+    {suit:'spades',face:'nine'},
+    {suit:'spades',face:'ace'},
+    {suit:'spades',face:'king'},
+    {suit:'spades',face:'ten'},
+    {suit:'spades',face:'nine'},
+    {suit:'spades',face:'ace'}
+    ];
+
+    var players = [
+      {name:'ME'},
+      {name:'Henry'},
+      {name:'Joe'},
+      {name:'Roger'},
+      {name:'ME'},
+      {name:'Henry'},
+      {name:'Joe'},
+      {name:'Roger'}
+    ]
+
+  $scope.setPlayers = function() {
+    setPositions(players);
+  }
+
+  $scope.startDeal = function() {
+    // # of cards, # to dealBy
+    DealCards(48,1);
+  }
+
+  $scope.startBidding = function() {
+    $scope.bidding = !($scope.bidding);
+  }
+
+  $scope.startOption = function() {
+    $scope.option = !($scope.option);
+  }
 }

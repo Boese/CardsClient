@@ -1,8 +1,8 @@
 'use strict'
 angular.module('cardsApp.loginCtrl', [])
-  .controller('loginCtrl', ['$scope','$rootScope','$state','$famous','$interval','Service','$window',loginCtrl]);
+  .controller('loginCtrl', ['$scope','$rootScope','$state','$famous','$interval','Service','$window','$timeout',loginCtrl]);
 
-function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
+function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window,$timeout) {
   var Transform = $famous['famous/core/Transform'];
   var Modifier = $famous['famous/core/Modifier'];
   var Transitionable = $famous['famous/transitions/Transitionable'];
@@ -28,15 +28,16 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
 
   function swipeDownAnimation(swipeCount) {
     if(swipeCount === 0) {
-      $scope.swipe.activeDown = false;
-      $scope.swipe.activeLeft = true;
-      $scope.swipe.title = 'Account'
-      swipeLeftAnimation(3);
-      $scope.$apply()
-      return;
+      $timeout(function() {
+        $scope.swipe.activeDown = false;
+        $scope.swipe.activeLeft = true;
+        $scope.swipe.title = 'Account'
+        swipeLeftAnimation(3);
+        return;
+      });
     }
 
-    $scope.swipe.down.set([0,10,0], {duration:700,curve:Easing.inOut}, function() {
+    $scope.swipe.down.set([0,10,0], {duration:500,curve:Easing.inOut}, function() {
       $scope.swipe.down.set([0,0,0], {duration:0,curve:Easing.inOut}, function() {
         swipeDownAnimation(--swipeCount);
       })
@@ -45,12 +46,13 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
 
   function swipeLeftAnimation(swipeCount) {
     if(swipeCount === 0) {
-      $scope.swipe.activeLeft = false;
-      $scope.$apply()
-      return;
+      $timeout(function() {
+        $scope.swipe.activeLeft = false;
+        return;
+      });
     }
 
-    $scope.swipe.left.set([-10,0,0], {duration:700,curve:Easing.inOut}, function() {
+    $scope.swipe.left.set([-10,0,0], {duration:500,curve:Easing.inOut}, function() {
       $scope.swipe.left.set([0,0,0], {duration:0,curve:Easing.inOut}, function() {
         swipeLeftAnimation(--swipeCount);
       })
@@ -111,7 +113,7 @@ function loginCtrl($scope,$rootScope,$state,$famous,$interval,Service,$window) {
     // User is swiping in Y direction
     else {
       if(deltaY <= 200 && deltaY >= 0)
-        scale = deltaY*.001
+        scale = deltaY*.0015
     }
   }
 

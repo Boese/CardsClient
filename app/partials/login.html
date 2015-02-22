@@ -11,7 +11,7 @@
           <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
           <input type="text" ng-model="loginModel.username" class="form-control" placeholder="username">
         </div>
-        <div ng-if="loginState.create" class="input-group">
+        <div ng-show="loginState.create" class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
           <input type="email" ng-model="loginModel.email" class="form-control" placeholder="email">
         </div>
@@ -19,7 +19,7 @@
           <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
           <input type="password" ng-model="loginModel.password" class="form-control" placeholder="password">
         </div>
-        <div ng-if="loginState.create" class="input-group">
+        <div ng-show="loginState.create" class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
           <input type="password" ng-model="loginModel.password2" class="form-control" placeholder="password">
         </div>
@@ -29,15 +29,15 @@
   </fa-modifier>
 
     <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.6]" fa-translate="swipe.left.get()" fa-scale="[10,10,100]">
-      <fa-surface ng-if="swipe.activeLeft" fa-size="[true,true]" fa-color="'#fc5c4f'">⇠</fa-surface>
+      <fa-surface ng-show="swipe.activeLeft" fa-size="[true,true]" fa-color="'#fc5c4f'">⇠</fa-surface>
     </fa-modifier>
 
     <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.6]" fa-translate="swipe.down.get()" fa-scale="[10,10,100]">
-      <fa-surface ng-if="swipe.activeDown" fa-size="[true,true]" fa-color="'#fc5c4f'">⇣</fa-surface>
+      <fa-surface ng-show="swipe.activeDown" fa-size="[true,true]" fa-color="'#fc5c4f'">⇣</fa-surface>
     </fa-modifier>
 
     <fa-modifier fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-scale="[5,5,1]">
-      <fa-surface ng-if="swipe.activeDown || swipe.activeLeft" fa-size="[true,true]" fa-color="'#fc5c4f'">{{swipe.title}}</fa-surface>
+      <fa-surface ng-show="swipe.activeDown || swipe.activeLeft" fa-size="[true,true]" fa-color="'#fc5c4f'">{{swipe.title}}</fa-surface>
     </fa-modifier>
 
 </fa-modifier>

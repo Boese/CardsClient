@@ -2,10 +2,27 @@
   <!--GameBoard Background-->
   <fa-image-surface fa-image-url="images/cardTable.png"></fa-image-surface>
 
+  <!-- Temp -->
+  <fa-modifier fa-size="[true,true]">
+    <fa-surface>
+    </br><button ng-click="setPlayers()" class="btn btn-primary btn-lg">Set Players</button>
+    </br><button ng-click="startDeal()" class="btn btn-success btn-lg">Deal</button>
+    </br><button ng-click="startBidding()" class="btn btn-info btn-lg">Bid</button>
+    </br><button ng-click="startOption()" class="btn btn-warning btn-lg">Option</button>
+    </fa-surface>
+  </fa-modifier>
+
+  <!-- ScoreBoard -->
+  <fa-modifier fa-size="[width/3,height/8]"
+               fa-origin="[.97,0.01]"
+               fa-align="[.97,0.01]">
+    <fa-surface fa-options="scoreboardStyle"></fa-surface>
+  </fa-modifier>
+
   <!--Players-->
   <fa-modifier ng-repeat="player in players"
                fa-origin="[0.5,0.5]"
-               fa-align="[0.5,0.5]"
+               fa-align="[0.5,0.4]"
                fa-translate="player.position.get()">
       <fa-sequential-layout>
         <fa-surface fa-size="[true,75]" fa-options="playerStyle">{{player.name}}</fa-surface>
@@ -18,9 +35,16 @@
                fa-origin="[0.5,0.5]"
                fa-align="[0.5,0.85]">
     <fa-grid-layout fa-options="cardsGrid">
-          <fa-surface fa-click="addRemoveCards($index)" ng-repeat="card in cards track by $index">
-            <img ng-style="getCardSprite(card)"></img>
-          </fa-surface>
+      <fa-modifier fa-origin="[0.5,0.5]"
+                   fa-align="[0.5,0.5]"
+                   fa-translate="card.position.get()"
+                   ng-repeat="card in cards track by $index">
+          <fa-surface fa-touchstart = "cardTouchStart($event,card)"
+                      fa-touchmove = "cardTouchMove($event,card)"
+                      fa-touchend = "cardTouchEnd($event,card)">
+          <img ng-style="getCardSprite(card)"></img>
+        </fa-surface>
+      </fa-modifier>
     </fa-grid-layout>
   </fa-modifier>
 
@@ -30,7 +54,7 @@
     </fa-modifier>
 
     <!--Bidding-->
-    <fa-modifier ng-if="bidding && !dealing" fa-size="[130,50]" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-scale="[3,3]">
+    <fa-modifier ng-show="bidding && !dealing" fa-size="[130,50]" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]" fa-scale="[3,3]">
       <fa-grid-layout fa-options="{dimensions:[3,1]}">
         <fa-surface fa-click="sendBid(0)" fa-options="bidStyle">PASS</fa-surface>
         <fa-grid-layout fa-options="{dimensions:[1,3]}">
@@ -42,14 +66,18 @@
       </fa-grid-layout>
     </fa-modifier>
 
-    <!--Trump-->
-    <fa-modifier ng-if="trump && !dealing" fa-origin="[0.5,0.5]" fa-align="[0.5,0.5]">
-      <fa-surface fa-size="[true,true]" fa-options="currentMessage">
-          <button ng-click="sendTrump('Hearts')" class="btn btn-sm btn-primary">Hearts</button>
-          <button ng-click="sendTrump('Spades')" class="btn btn-sm btn-info">Spades</button>
-          <button ng-click="sendTrump('Diamonds')" class="btn btn-sm btn-primary">Diamonds</button>
-          <button ng-click="sendTrump('Clubs')" class="btn btn-sm btn-info">Clubs</button>
-      </fa-surface>
+    <!--Option-->
+    <fa-modifier ng-show="option && !dealing"
+                 fa-size="[width/1.2,true]"
+                 fa-origin="[0.5,0.5]"
+                 fa-align="[0.5,0.5]">
+      <fa-grid-layout fa-options="{dimensions:[options.length,1]}">
+        <fa-surface fa-options="optionStyle"
+                    fa-size="[true,true]"
+                    ng-repeat="option in options">
+          {{option.option}}
+        </fa-surface>
+      </fa-grid-layout>
     </fa-modifier>
 
     <!--DEALING-->
